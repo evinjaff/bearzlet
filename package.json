@@ -1,0 +1,61 @@
+{
+  "name": "military-movie-see-fybb0",
+  "productName": "military-movie-see-fybb0",
+  "description": "My Electron application description",
+  "keywords": [],
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "evinjaff",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
+    "electron": "^11.4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cse330-spring-2021/creativeproject-module7-475736-473830.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cse330-spring-2021/creativeproject-module7-475736-473830/issues"
+  },
+  "homepage": "https://github.com/cse330-spring-2021/creativeproject-module7-475736-473830#readme",
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "military_movie_see_fybb0"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  }
+}
