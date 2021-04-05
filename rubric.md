@@ -1,6 +1,7 @@
 # Project: BearStudy (Quizlet Knockoff)
 
 # Rubric turned in on time (5 points)
+Approved by Professor Sproull
 
 # Languages/Frameworks used (20 points)
 5 - Learned/Used Electronjs interface to make desktop application
