@@ -2,6 +2,10 @@
 //<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 //install instructions: https://vuejs.org/v2/guide/installation.html
 
+let user = "Megan";
+
+let sets = ["Set 1", "Set 2"];
+
 let resp;
 
 const Demo = {
@@ -28,6 +32,52 @@ const Counter = {
   }
   
   Vue.createApp(Counter).mount('#counter')
+
+
+const Title = {
+    data() {
+      return {
+        title: `Hello, ${user}`
+      }
+  }
+}
+  
+  Vue.createApp(Title).mount('#title')
+
+
+  let getsets = async function () {
+
+    let a;
+    const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/mongodb.php'
+    var obj;
+    a = JSON.parse(await $.ajax({
+        type: 'POST',
+        // make sure you respect the same origin policy with this url:
+        // http://en.wikipedia.org/wiki/Same_origin_policy
+        url: pathToPhpFile,
+        success: function (msg) {
+            console.log(msg);
+           
+        },
+        failure: function (msg) {
+            //alert('failedreq')
+            obj = { 'status': 'requestfailed' };
+        }
+    }));
+
+    let d = document.createElement("p");
+
+    a["starredsets"].forEach( s => d.innerHTML += "<strong>" + s + "</strong> <br>");
+
+    document.getElementById("sets").appendChild(d);
+
+  }
+
+  
+
+  //Vue is data driven so dynamically add sets
+
+
 
 
 let query = async function () {
@@ -85,7 +135,8 @@ let query = async function () {
                 }
             });
 
-       }
+    }
 
+document.getElementById("loadsets").addEventListener("click", async function () { await getsets(); }, false);
 
 document.getElementById("queery").addEventListener("click", async function () { resp = await query(); document.getElementById("ajaxtest").innerHTML = resp; }, false);
