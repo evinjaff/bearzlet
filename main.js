@@ -72,7 +72,7 @@ const template = [
       { role: 'about' },
       { type: 'separator' },
       {
-        label: 'Preferences',
+        label: 'Account Preferences',
         click() { openAboutWindow() }
 
       },
@@ -89,9 +89,10 @@ const template = [
   {
     label: 'File',
     submenu: [
-      isMac ? { role: 'close' } : { role: 'quit' }
-    ]
-  },
+      isMac ? { role: 'close' } : { role: 'quit' },
+      isMac ? {} : { label: 'Account Preferences',
+      click() { openAboutWindow() }}
+    ]},
   // { role: 'editMenu' }
   {
     label: 'Edit',
@@ -184,9 +185,9 @@ function openAboutWindow() {
     title: '',
     minimizable: false,
     fullscreenable: false,
-    
+
     webSecurity: false
-    
+
   })
   console.log(__dirname);
   newWindow.loadURL(`file://${__dirname}/preferences.html`);
