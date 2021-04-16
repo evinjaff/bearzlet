@@ -1,10 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
+
+    <meta http-equiv="refresh" content="120">
+    <!-- Framework Imports -->
+     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+     <script src="https://unpkg.com/vue@next"></script>
+     <link rel="stylesheet" href="style.css">
+
     <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+
+        Haha no web security go brr
+
+    <meta http-equiv="Content-Security-Policy" content="default-src http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/*; script-src 'self'">
+    <meta http-equiv="X-Content-Security-Policy" content="connect-src http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/*; script-src 'self'">
+    
+    
+    <meta http-equiv="Content-Security-Policy" content="connect-src http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/*">
+  -->
+    <div id="counter">
+      Counter: {{ counter }}
+    </div>
+
     <title>Hello World!</title>
   </head>
   <body>
@@ -16,9 +34,39 @@
     <br>
     <br>
 
+
+    <div id="demo">
+      <button @click="show = !show">
+        Toggle
+      </button>
+      
+      <transition name="fade">
+        <p v-if="show">hello</p>
+      </transition>
+    </div>
+
+    <br>
+    <br>
+
+    <div id="login_div">
+          <br>
+          <h2>Login: </h2>
+          Username:<input id="lusername" type="text">
+          Password:<input id="lpassword" type="password">
+          <button id="login">Log in</button>
+          <br>
+    </div>
+
+    <button id="queery">QUEERy</button>
+
+    <p id="ajaxtest">
+      
+    </p>
+
     <p>This app was compiled on the command line by me, Evin!</p>
 
     <!-- You can also require other files to run in this process -->
     <script src="./renderer.js"></script>
+    <script src="./frontend.js"></script>
   </body>
 </html>
