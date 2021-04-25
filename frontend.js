@@ -73,6 +73,42 @@ const Title = {
 
   }
 
+
+  let makeacct = async function () {
+
+    let a;
+    const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/createaccount.php'
+    var obj;
+    a = await $.ajax({
+        type: 'POST',
+        // make sure you respect the same origin policy with this url:
+        // http://en.wikipedia.org/wiki/Same_origin_policy
+        url: pathToPhpFile,
+        data: {
+          'user': document.getElementById('cusername').value,
+          'password': document.getElementById('cpassword').value,
+          'email': document.getElementById('cemail').value,
+        },
+        success: function (msg) {
+            console.log(msg);
+           
+        },
+        failure: function (msg) {
+            //alert('failedreq')
+            console.log(msg)
+        }
+    });
+
+    let verify = document.createElement("p");
+
+    //verify Email here
+
+
+
+    document.getElementById("makeacct_div").appendChild(d);
+
+  }
+
   
 
   //Vue is data driven so dynamically add sets
@@ -138,5 +174,7 @@ let query = async function () {
     }
 
 document.getElementById("loadsets").addEventListener("click", async function () { await getsets(); }, false);
+
+document.getElementById("makeacct").addEventListener("click", async function () { await makeacct(); }, false);
 
 document.getElementById("queery").addEventListener("click", async function () { resp = await query(); document.getElementById("ajaxtest").innerHTML = resp; }, false);
