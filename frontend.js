@@ -8,6 +8,8 @@ let sets = ["Set 1", "Set 2"];
 
 let resp;
 
+//let loggedIn = false;
+
 const Demo = {
   data() {
     return {
@@ -39,6 +41,11 @@ const Title = {
     return {
       title: `Hello, ${user}`
     }
+},
+mounted() {
+  setInterval(() => {
+    this.title = `Hello, ${user}`;
+  }, 100)
 }
 }
 
@@ -135,8 +142,42 @@ let makeacct = async function () {
 
 }
 
+//FileReader code updated to Vue3 from https://www.raymondcamden.com/2019/05/21/reading-client-side-files-for-validation-with-vuejs
+const fileRead = {
+  data() {
+    return {
+      text:'',
+      lines: []
+    }
+  },
+
+  methods:{
+    selectedFile(event) {
+        console.log('selected a file');
+        console.log(this.$refs.myFile.files[0]);
+        
+        let file = this.$refs.myFile.files[0];
+        if(!file || file.type !== 'text/plain') return;
+        
+        let reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload =  evt => {
+          this.text = evt.target.result;
+          lines = this.text.split("/\r?\n/");
+          console.log("lines: ",lines);
+        }
+        reader.onerror = evt => {
+          console.error(evt);
+        }
+    }
+  }
+  
+}
+Vue.createApp(fileRead).mount('#fileRead')
+
 
 let uploadSet = async function () {
+
 
   /* VUE babey
    use this to read a file in? https://www.digitalocean.com/community/tutorials/vuejs-file-reader-component
@@ -229,6 +270,34 @@ let query = async function () {
 
 }
 
+
+let login = async function(){
+  let a;
+  const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/login.php'
+  var obj;
+  return $.ajax({
+    type: 'POST',
+    // make sure you respect the same origin policy with this url:
+    // http://en.wikipedia.org/wiki/Same_origin_policy
+    url: pathToPhpFile,
+    data: {
+      'username': document.getElementById('lusername').value,
+      'password': document.getElementById('lpassword').value,
+    },
+    success: function (msg) {
+      console.log(msg);
+      user = "Megan but gay";
+
+    },
+    failure: function (msg) {
+      //alert('failedreq')
+      obj = { 'status': 'requestfailed' };
+    }
+  });
+
+}
+
+
 document.getElementById("loadsets").addEventListener("click", async function () { await getsets(); }, false);
 
 document.getElementById("makeacct").addEventListener("click", async function () { await makeacct(); }, false);
@@ -236,3 +305,5 @@ document.getElementById("makeacct").addEventListener("click", async function () 
 document.getElementById("queery").addEventListener("click", async function () { resp = await query(); document.getElementById("ajaxtest").innerHTML = resp; }, false);
 
 document.getElementById("uploadset").addEventListener("click", async function () { uploadSet() }, false);
+
+document.getElementById("login").addEventListener("click", async function () { login() }, false);

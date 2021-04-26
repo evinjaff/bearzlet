@@ -20,14 +20,14 @@
     <meta http-equiv="Content-Security-Policy" content="connect-src http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/*">
   -->
   <div id="counter">
-    Counter: {{ counter }}
+    <span>Counter: {{ counter }}</span>
   </div>
 
   <title>Bearzlet</title>
 </head>
 <body>
   <div id="title">
-    <h1>{{title}}</h1>
+    <span>{{title}}</span>
   </div>
     
     We are using Node.js <span id="node-version"></span>,
@@ -81,6 +81,19 @@
 
     <button id="uploadset">Upload A New Set</button>
 
+    <div id="fileRead">
+      <!-- This is where the File Upload belongs -->
+      <input type="file" id="fileUpload" ref="myFile" @change="selectedFile(), $event">Choose a File</input><br/>
+
+      <div v-if="lines.length">
+      <p>Your file contains {{lines.length}} lines:</p>
+        <ul>
+        <li v-for="l in lines">{{l}}</li>
+        </ul>
+      </div>
+
+
+    </div>
 
     <p id="ajaxtest">
       
