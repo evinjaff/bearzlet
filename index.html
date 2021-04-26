@@ -19,23 +19,22 @@
     
     <meta http-equiv="Content-Security-Policy" content="connect-src http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/*">
   -->
-    <div id="counter">
-      Counter: {{ counter }}
-    </div>
+  <div id="counter">
+    Counter: {{ counter }}
+  </div>
 
-    <title>Bearzlet</title>
-  </head>
-  <body>
-    <div id="title">
-      <h1>{{title}}</h1>
-    </div>
+  <title>Bearzlet</title>
+</head>
+<body>
+  <div id="title">
+    <h1>{{title}}</h1>
+  </div>
+    
     We are using Node.js <span id="node-version"></span>,
     Chromium <span id="chrome-version"></span>,
     and Electron <span id="electron-version"></span>.
 
     <br>
-    <br>
-
 
     <div id="demo">
       <button @click="show = !show">
@@ -48,11 +47,8 @@
     </div>
 
     <br>
-    <br>
-
 
     <div id="makeacct_div">
-      <br>
       <h2>Make Account: </h2>
       Username:<input id="cusername" type="text">
       <br>
@@ -72,6 +68,8 @@
           <br>
     </div>
 
+    <br>
+
     <button id="queery">QUEERy</button>
     <button id="loadsets">Load seets</button>
 
@@ -80,6 +78,9 @@
     <div id="sets">
 
     </div>
+
+    <button id="uploadset">Upload A New Set</button>
+
 
     <p id="ajaxtest">
       
