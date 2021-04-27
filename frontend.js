@@ -42,11 +42,11 @@ const Title = {
       title: `Hello, ${user}`
     }
 },
-mounted() {
-  setInterval(() => {
-    this.title = `Hello, ${user}`;
-  }, 100)
-}
+// mounted() {
+//   setInterval(() => {
+//     this.title = `Hello, ${user}`;
+//   }, 100)
+// }
 }
 
 Vue.createApp(Title).mount('#title')
