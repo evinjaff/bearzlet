@@ -3,12 +3,11 @@
 //install instructions: https://vuejs.org/v2/guide/installation.html
 
 let user = "Megan";
+let helloMsg = `Hello, ${user}`
 
 let sets = ["Set 1", "Set 2"];
 
 let resp;
-
-//let loggedIn = false;
 
 const Demo = {
   data() {
@@ -17,7 +16,6 @@ const Demo = {
     }
   }
 }
-
 Vue.createApp(Demo).mount('#demo')
 
 const Counter = {
@@ -32,14 +30,13 @@ const Counter = {
     }, 1000)
   }
 }
-
 Vue.createApp(Counter).mount('#counter')
 
 
 const Title = {
   data() {
     return {
-      title: `Hello, ${user}`
+      title: helloMsg
     }
 },
 // mounted() {
@@ -48,8 +45,16 @@ const Title = {
 //   }, 100)
 // }
 }
-
 Vue.createApp(Title).mount('#title')
+
+const MakeAcct = {
+  data() {
+    return {
+      showing: false
+    }
+  },
+}
+Vue.createApp(MakeAcct).mount('#makeacct_div')
 
 //Vue is data driven so dynamically add sets
 let getsets = async function () {
@@ -150,11 +155,10 @@ const fileRead = {
       lines: []
     }
   },
-
   methods:{
     selectedFile(event) {
         console.log('selected a file');
-        console.log(this.$refs.myFile.files[0]);
+        //console.log(this.$refs.myFile.files[0]);
         
         let file = this.$refs.myFile.files[0];
         if(!file || file.type !== 'text/plain') return;
@@ -163,8 +167,10 @@ const fileRead = {
         reader.readAsText(file, "UTF-8");
         reader.onload =  evt => {
           this.text = evt.target.result;
-          lines = this.text.split("/\r?\n/");
-          console.log("lines: ",lines);
+          this.lines=this.text.split("\n");
+          // console.log("text: ",this.text);
+          // console.log("lines: ",this.lines);
+          uploadSet(this.lines)
         }
         reader.onerror = evt => {
           console.error(evt);
@@ -176,16 +182,19 @@ const fileRead = {
 Vue.createApp(fileRead).mount('#fileRead')
 
 
-let uploadSet = async function () {
+let uploadSet = async function (contents) {
 
+  console.log(contents);
 
-  /* VUE babey
-   use this to read a file in? https://www.digitalocean.com/community/tutorials/vuejs-file-reader-component
-   this is also an option https://www.raymondcamden.com/2019/05/21/reading-client-side-files-for-validation-with-vuejs
-
-
-  */
-
+  const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/login.php'
+    $.ajax({
+      type: "POST",
+      data: {contents : contents},
+      url: pathToPhpFile,
+      success: function(msg){
+        console.log("successfully sent to php",msg);
+      },
+    });
 
   /* this belongs in the php
  
@@ -286,8 +295,8 @@ let login = async function(){
     },
     success: function (msg) {
       console.log(msg);
-      user = "Megan but gay";
-
+      user = "Megan but cool";
+      helloMsg = `Hello, ${user}`
     },
     failure: function (msg) {
       //alert('failedreq')

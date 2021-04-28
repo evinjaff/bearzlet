@@ -1,6 +1,4 @@
 <!--this code from https://www.digitalocean.com/community/tutorials/vuejs-file-reader-component-->
-
-
 <template>
   <label class="text-reader">
     <input type="file" @change="loadTextFromFile">

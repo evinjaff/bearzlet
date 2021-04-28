@@ -49,7 +49,8 @@
 
     <br>
 
-    <div id="makeacct_div">
+    <!--this v-show tag isn't working right :( -->
+    <div id="makeacct_div" v-show="showing"> 
       <h2>Make Account: </h2>
       Username:<input id="cusername" type="text">
       <br>
@@ -80,11 +81,10 @@
 
     </div>
 
-    <button id="uploadset">Upload A New Set</button>
-
+    <h2 id="uploadset">Upload A New Set</h2>
     <div id="fileRead">
       <!-- This is where the File Upload belongs -->
-      <input type="file" id="fileUpload" ref="myFile" @change="selectedFile(), $event">Choose a File</input><br/>
+      <input type="file" id="fileUpload" ref="myFile" @change="selectedFile(), $event"></input><br/>
 
       <div v-if="lines.length">
       <p>Your file contains {{lines.length}} lines:</p>
