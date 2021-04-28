@@ -72,7 +72,7 @@
 
     <br>
 
-    <button id="queery">Query</button>
+    <button id="queery">QUEERy</button>
     <button id="loadsets">Load seets</button>
 
     <h3>Starred Sets</h3>
@@ -83,11 +83,10 @@
 
     <h2 id="uploadset">Upload A New Set</h2>
     <div id="fileRead">
-      <!-- This is where the File Upload belongs -->
       <input type="file" id="fileUpload" ref="myFile" @change="selectedFile(), $event"></input><br/>
 
       <div v-if="lines.length">
-      <p>Your file contains {{lines.length}} lines:</p>
+        <p>Your file contains {{lines.length}} lines:</p>
         <ul>
         <li v-for="l in lines">{{l}}</li>
         </ul>
@@ -96,9 +95,17 @@
 
     </div>
 
-    <p id="ajaxtest">
-      
-    </p>
+    <p id="ajaxtest"></p>
+
+    <div id="flashcards_div">
+      <button @click="showSide = !showSide" v-if="showSide">{{side1}}</button>
+      <button @click="showSide = !showSide" v-else>{{side2}}</button>
+      <!-- <transition name="fade"> -->
+        <!-- <p class="card" v-if="showSide">{{side1}}</p> -->
+        <!-- <p v-else>{{side2}}</p> -->
+      <!-- </transition> -->
+
+    </div>
 
     <p>This app was compiled on the command line by me, Evin!</p>
 

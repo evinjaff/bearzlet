@@ -56,12 +56,25 @@ const MakeAcct = {
 }
 Vue.createApp(MakeAcct).mount('#makeacct_div')
 
+const Flashcards = {
+  data() {
+    return {
+      showSide: true,
+      side1: "word",
+      side2: "definition"
+    }
+  },
+}
+Vue.createApp(Flashcards).mount('#flashcards_div')
+
 //Vue is data driven so dynamically add sets
 let getsets = async function () {
 
   // clear out any existing child elements
   document.getElementById("sets").innerHTML = "";
 
+
+  //TODO get all sets with privacy set to "false"
   let a;
   const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/mongodb.php'
   var obj;
@@ -182,42 +195,28 @@ const fileRead = {
 Vue.createApp(fileRead).mount('#fileRead')
 
 
-let uploadSet = async function (contents) {
+let uploadSet = async function (c) {
 
-  console.log(contents);
+  console.log(c);
+  let name = c[0];
+  let privacy = c[1];
+  let contents = c.slice(2);
 
-  const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/login.php'
+  const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/uploadset.php'
     $.ajax({
       type: "POST",
-      data: {contents : contents},
+      data: {
+        name: name,
+        privacy: privacy,
+        contents : contents
+      },
       url: pathToPhpFile,
       success: function(msg){
         console.log("successfully sent to php",msg);
       },
     });
 
-  /* this belongs in the php
- 
-  make sure you filter input
-  sample code from https://docs.mongodb.com/php-library/current/reference/method/MongoDBCollection-insertMany/
-    $collection = (new MongoDB\Client)->test->users;
 
-    $insertManyResult = $collection->insertMany([
-        [
-            'username' => 'admin',
-            'email' => 'admin@example.com',
-            'name' => 'Admin User',
-        ],
-        [
-            'username' => 'test',
-            'email' => 'test@example.com',
-            'name' => 'Test User',
-        ],
-    ]);
-
-    printf("Inserted %d document(s)\n", $insertManyResult->getInsertedCount());
-
-  */
 }
 
 

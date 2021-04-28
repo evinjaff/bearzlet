@@ -1,4 +1,4 @@
-body {
+  body {
     margin: 30px;
   }
   
@@ -9,3 +9,9 @@ body {
   .fade-enter-from, .fade-leave-to {
     opacity: 0;
   }
+
+.card{
+  border-style: solid;
+  border-width: medium;
+  border-radius: 3px;
+}
