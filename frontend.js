@@ -6,6 +6,17 @@ let user = "Megan";
 let helloMsg = `Hello, ${user}`
 
 let sets = ["Set 1", "Set 2"];
+let currentWords = ["word1", "word2", "word3"];
+let currentDefs = ["def1", "def2", "def3"];
+let currentIndex = 0;
+let currentWord = "word";
+let currentDef = "definition";
+let globalCorrect = false;
+let globalIncorrect = false;
+
+let loggedIn = false;
+let flashcardActive = false;
+let writeActive = false;
 
 let resp;
 
@@ -14,7 +25,12 @@ const Demo = {
     return {
       show: true
     }
-  }
+   },
+  // mounted() {
+  //   setInterval(() => {
+  //     this.show = !this.show;
+  //   }, 1000)
+  // }
 }
 Vue.createApp(Demo).mount('#demo')
 
@@ -32,40 +48,110 @@ const Counter = {
 }
 Vue.createApp(Counter).mount('#counter')
 
-
 const Title = {
   data() {
     return {
-      title: helloMsg
+      title: helloMsg,
     }
-},
-// mounted() {
-//   setInterval(() => {
-//     this.title = `Hello, ${user}`;
-//   }, 100)
-// }
+  },
+  mounted() {
+    setInterval(() => {
+      this.title = `Hello, ${user}`;
+    }, 100)
+  }
 }
 Vue.createApp(Title).mount('#title')
 
 const MakeAcct = {
   data() {
     return {
-      showing: false
+      show: true,
     }
   },
+  mounted() {
+    setInterval(() => {
+      this.show = !loggedIn;
+      //console.log(this.show);
+    }, 100)
+  }
 }
 Vue.createApp(MakeAcct).mount('#makeacct_div')
 
-const Flashcards = {
+const Login = {
   data() {
     return {
-      showSide: true,
-      side1: "word",
-      side2: "definition"
+      show: true,
     }
   },
+  mounted() {
+    setInterval(() => {
+      this.show = !loggedIn;
+      //console.log(this.show);
+    }, 100)
+  }
+}
+Vue.createApp(Login).mount('#login_div')
+
+// const FileRead = {
+//   data() {
+//     return {
+//       show: true,
+//     }
+//   }
+// }
+// Vue.createApp(FileRead).mount('#fileRead_div')
+
+let Flashcards = {
+  data: () => ({
+      show: false,
+      showSide: true,
+      side1:"word",
+      side2:"definition"
+  }),
+  methods:{
+    changeCard(word,def) {
+      console.log("changeCard called w", word, def);
+      this.side1=word;
+      this.side2=def;
+    }
+  },
+  mounted() {
+    setInterval(() => {
+      this.side1 = currentWord;
+      this.side2 = currentDef;
+      this.show = flashcardActive;
+    }, 100)
+  }
 }
 Vue.createApp(Flashcards).mount('#flashcards_div')
+
+let Write = {
+  data: () => ({
+    show: false,
+    word:"word",
+    definition:"definition",
+    correct:false,
+    incorrect:false
+}),
+methods:{
+  changeCard(word,def) {
+    console.log("changeCard called w", word, def);
+    this.word=word;
+    this.definition=def;
+  }
+},
+mounted() {
+  setInterval(() => {
+    this.word = currentWord;
+    this.definition = currentDef;
+    this.correct = globalCorrect;
+    this.incorrect = globalIncorrect;
+    this.show = writeActive;
+  }, 100)
+}
+
+}
+Vue.createApp(Write).mount('#write_div')
 
 //Vue is data driven so dynamically add sets
 let getsets = async function () {
@@ -74,7 +160,7 @@ let getsets = async function () {
   document.getElementById("sets").innerHTML = "";
 
 
-  //TODO get all sets with privacy set to "false"
+  //TODO get all sets with privacy set to "false" or set to true and your username
   let a;
   const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/mongodb.php'
   var obj;
@@ -94,6 +180,7 @@ let getsets = async function () {
   }));
 
 
+  console.log(a["starredsets"]);
   //adds name of set and buttons
   a["starredsets"].forEach((s, index) => {
     let d = document.createElement("p");
@@ -115,21 +202,98 @@ let getsets = async function () {
 
 }
 
-//TODO
 let runFlashcard = async function (setName) {
   console.log("running flashcard with", setName);
+  //TODO set setName as currentWords and currentDefs
+  currentIndex = -1;
+  flashcardNext();
+
+  writeActive = false;
+  flashcardActive = true;
+  //don't look at this i know it's bad 
+  //https://stackoverflow.com/questions/16623852/how-to-pause-javascript-code-execution-for-2-seconds
+  setTimeout(function(){
+    document.getElementById("flashcardNext").addEventListener("click", async function () { flashcardNext() }, false);
+    document.getElementById("flashcardBack").addEventListener("click", async function () { flashcardBack() }, false);
+  }, 100);
 }
 
-//TODO
 let runWriting = async function (setName) {
   console.log("running writing with", setName);
+  //TODO set setName as currentWords and currentDefs
+  currentIndex = -1;
+  writeNext();
+
+  flashcardActive = false;
+  writeActive = true;
+  setTimeout(function(){
+      document.getElementById("writeNext").addEventListener("click", async function () { writeNext() }, false);
+      document.getElementById("write_submit").addEventListener("click", async function () { checkWrite() }, false);    
+    }, 100);
+  }
+
+let flashcardNext = async function () {
+  console.log("next");
+  currentIndex++;
+  if (currentIndex==currentWords.length){
+    currentIndex=0;
+  }
+  currentWord = currentWords[currentIndex];
+  currentDef = currentDefs[currentIndex];
+
+  Flashcards.methods.changeCard(currentWords[currentIndex], currentDefs[currentIndex]);
+}
+
+let flashcardBack = async function (){
+  console.log("back");
+  currentIndex--;
+  if (currentIndex==-1){
+    currentIndex=currentWords.length-1;
+  }
+  currentWord = currentWords[currentIndex];
+  currentDef = currentDefs[currentIndex];
+
+  Flashcards.methods.changeCard(currentWords[currentIndex], currentDefs[currentIndex]);
+}
+
+let checkWrite = async function() {
+  let attempt = document.getElementById("write_word").value;
+  console.log(attempt);
+
+  //let fuzzy = new FuzzySet(currentWords);
+  //let fuzzyattempt = fuzzy.get(attempt);
+  //console.log(fuzzyattempt);
+
+  if (attempt === currentWord){
+    globalCorrect = true;
+  } else {
+    globalIncorrect = true;
+  }
+}
+
+let writeNext = async function(){
+  console.log("next");
+  currentIndex++;
+  if (currentIndex==currentWords.length){
+    currentIndex=0;
+  }
+  currentWord = currentWords[currentIndex];
+  currentDef = currentDefs[currentIndex];
+
+  if (document.getElementById('write_word')!= null){
+    document.getElementById('write_word').value = '';
+  }
+  globalCorrect = false;
+  globalIncorrect = false;
+
+  Write.methods.changeCard(currentWords[currentIndex], currentDefs[currentIndex]);
 }
 
 let makeacct = async function () {
 
   let a;
   const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/createaccount.php'
-  var obj;
+  
   a = await $.ajax({
     type: 'POST',
     // make sure you respect the same origin policy with this url:
@@ -164,6 +328,7 @@ let makeacct = async function () {
 const fileRead = {
   data() {
     return {
+      show: true,
       text:'',
       lines: []
     }
@@ -189,10 +354,15 @@ const fileRead = {
           console.error(evt);
         }
     }
+  },
+  mounted() {
+    setInterval(() => {
+      this.show = loggedIn;
+    }, 100)
   }
   
 }
-Vue.createApp(fileRead).mount('#fileRead')
+Vue.createApp(fileRead).mount('#fileRead_div')
 
 
 let uploadSet = async function (c) {
@@ -293,9 +463,11 @@ let login = async function(){
       'password': document.getElementById('lpassword').value,
     },
     success: function (msg) {
-      console.log(msg);
+      //console.log(msg);
       user = "Megan but cool";
-      helloMsg = `Hello, ${user}`
+      helloMsg = `Hello, ${user}`;
+      loggedIn = true;
+      console.log(loggedIn);
     },
     failure: function (msg) {
       //alert('failedreq')
@@ -304,7 +476,6 @@ let login = async function(){
   });
 
 }
-
 
 document.getElementById("loadsets").addEventListener("click", async function () { await getsets(); }, false);
 

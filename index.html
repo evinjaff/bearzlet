@@ -47,10 +47,22 @@
       </transition>
     </div>
 
-    <br>
 
-    <!--this v-show tag isn't working right :( -->
-    <div id="makeacct_div" v-show="showing"> 
+    <div id="login_div">
+      <template v-if="show"> 
+          <br>
+          <h2>Login: </h2>
+          Username:<input id="lusername" type="text">
+          <br>
+          Password:<input id="lpassword" type="password">
+          <button id="login">Log in</button>
+          <br>
+        </template>
+    </div>
+
+
+    <div id="makeacct_div" >
+      <template v-if="show"> 
       <h2>Make Account: </h2>
       Username:<input id="cusername" type="text">
       <br>
@@ -59,16 +71,10 @@
       Email:<input id="cemail" type="email">
       <button id="makeacct">Make Account</button>
       <br>
+    </template>
     </div>
 
-    <div id="login_div">
-          <br>
-          <h2>Login: </h2>
-          Username:<input id="lusername" type="text">
-          Password:<input id="lpassword" type="password">
-          <button id="login">Log in</button>
-          <br>
-    </div>
+    
 
     <br>
 
@@ -81,31 +87,48 @@
 
     </div>
 
-    <h2 id="uploadset">Upload A New Set</h2>
-    <div id="fileRead">
-      <input type="file" id="fileUpload" ref="myFile" @change="selectedFile(), $event"></input><br/>
+    <div id="fileRead_div">
+      <div id="fileRead">
 
-      <div v-if="lines.length">
-        <p>Your file contains {{lines.length}} lines:</p>
-        <ul>
-        <li v-for="l in lines">{{l}}</li>
-        </ul>
+      <template v-if="show">    
+        <h2 id="uploadset">Upload A New Set</h2>
+        <input type="file" id="fileUpload" ref="myFile" @change="selectedFile(), $event"></input><br/>
+
+        <!-- <div v-if="lines.length">
+          <p>Your file contains {{lines.length}} lines:</p>
+          <ul>
+          <li v-for="l in lines">{{l}}</li>
+          </ul>
+        </div> -->
+      </template>
       </div>
-
-
     </div>
 
     <p id="ajaxtest"></p>
 
     <div id="flashcards_div">
-      <button @click="showSide = !showSide" v-if="showSide">{{side1}}</button>
-      <button @click="showSide = !showSide" v-else>{{side2}}</button>
-      <!-- <transition name="fade"> -->
-        <!-- <p class="card" v-if="showSide">{{side1}}</p> -->
-        <!-- <p v-else>{{side2}}</p> -->
-      <!-- </transition> -->
-
+      <template v-if="show">
+        <button class="fnext" id="flashcardBack">&lt-</button>
+        <button @click="showSide = !showSide" v-if="showSide" class="card">{{side1}}</button>
+        <button @click="showSide = !showSide" v-else class="card">{{side2}}</button>
+        <button class="fnext" id="flashcardNext">-></button>
+      </template>
     </div>
+
+
+    <div id="write_div">
+      <template v-if="show"> 
+        <p>Definition: {{definition}}</p>
+        Word:<input id="write_word" type="text">
+        <button id="write_submit">check</button>
+        <button id="writeNext">-></button>
+        <br>
+        <p id="write_correct" class="green" v-if="correct&&!incorrect">Correct!</p>
+        <p id="write_incorrect" class="red" v-if="incorrect&&!correct">Incorrect!</p>
+      </template>
+    </div>
+
+
 
     <p>This app was compiled on the command line by me, Evin!</p>
 

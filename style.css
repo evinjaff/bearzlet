@@ -14,4 +14,17 @@
   border-style: solid;
   border-width: medium;
   border-radius: 3px;
+  padding: 32px 16px;
+}
+
+.fnext{
+  padding: 8px 8px;
+}
+
+.green{
+  color: darkgreen;
+}
+
+.red{
+  color:darkred;
 }

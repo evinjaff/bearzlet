@@ -14,7 +14,10 @@
     "frontend.js",
     "style.css"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "fuzzyset": "^1.0.6",
+    "fuzzyset.js": "^1.0.6"
+  },
   "devDependencies": {
     "electron": "11.2.3"
   }
