@@ -64,7 +64,8 @@ app.on('ready', () => {
   myCapacitorApp.init();
 });
 
-const template = [
+const template =
+ [
   // { role: 'appMenu' }
   ...(isMac ? [{
     label: app.name,
@@ -72,7 +73,7 @@ const template = [
       { role: 'about' },
       { type: 'separator' },
       {
-        label: 'Account Preferences',
+        label: 'Preferences',
         click() { openAboutWindow() }
 
       },
@@ -89,10 +90,9 @@ const template = [
   {
     label: 'File',
     submenu: [
-      isMac ? { role: 'close' } : { role: 'quit' },
-      isMac ? {} : { label: 'Account Preferences',
-      click() { openAboutWindow() }}
-    ]},
+      isMac ? { role: 'close' } : { role: 'quit' }
+    ]
+  },
   // { role: 'editMenu' }
   {
     label: 'Edit',
@@ -135,6 +135,16 @@ const template = [
       { role: 'zoomOut' },
       { type: 'separator' },
       { role: 'togglefullscreen' }
+    ]
+  },
+  {
+    label: 'Verify Email',
+    submenu: [
+      {
+        label: 'Verify my Email',
+        click() { openVerifyWindow() }
+
+      }
     ]
   },
   // { role: 'windowMenu' }
@@ -191,6 +201,31 @@ function openAboutWindow() {
   })
   console.log(__dirname);
   newWindow.loadURL(`file://${__dirname}/preferences.html`);
+
+  newWindow.on('closed', function() {
+    newWindow = null
+  })
+}
+
+function openVerifyWindow() {
+  if (newWindow) {
+    newWindow.focus()
+    return
+  }
+
+  newWindow = new BrowserWindow({
+    height: 300,
+    resizable: true,
+    width: 400,
+    title: '',
+    minimizable: false,
+    fullscreenable: false,
+
+    webSecurity: false
+
+  })
+  console.log(__dirname);
+  newWindow.loadURL(`file://${__dirname}/verify.html`);
 
   newWindow.on('closed', function() {
     newWindow = null

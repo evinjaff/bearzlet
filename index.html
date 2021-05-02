@@ -2,13 +2,14 @@
 <html>
   <head>
 
-    <meta http-equiv="refresh" content="120">
+    <!--<meta http-equiv="refresh" content="120">-->
     <!-- Framework Imports -->
      <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
      <script src="https://unpkg.com/vue@next"></script>
      <script src="https://unpkg.com/vue-router@3.5.1/dist/vue-router.js"></script>
      <link rel="stylesheet" href="style.css">
-
+     <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+     <script type="text/javascript" src="./node_modules/fuzzyset.js/dist/fuzzyset.js"></script>
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 
@@ -47,6 +48,11 @@
       </transition>
     </div>
 
+    <div id="logout_div">
+      <template v-if="show"> 
+        <button id="logout">Logout</button>
+      </template>
+    </div>
 
     <div id="login_div">
       <template v-if="show"> 
@@ -55,7 +61,7 @@
           Username:<input id="lusername" type="text">
           <br>
           Password:<input id="lpassword" type="password">
-          <button id="login">Log in</button>
+          <button id="login">Login</button>
           <br>
         </template>
     </div>
@@ -124,6 +130,7 @@
         <button id="writeNext">-></button>
         <br>
         <p id="write_correct" class="green" v-if="correct">Correct!</p>
+        <p id="write_correct" class="green" v-if="correctfuzzy">Did you mean {{word}}? We'll give it to you!</p>
         <p id="write_incorrect" class="red" v-if="incorrect">Incorrect!</p>
       </template>
     </div>

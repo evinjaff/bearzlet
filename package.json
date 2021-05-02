@@ -16,7 +16,8 @@
   ],
   "dependencies": {
     "fuzzyset": "^1.0.6",
-    "fuzzyset.js": "^1.0.6"
+    "fuzzyset.js": "^1.0.6",
+    "requirejs": "^2.3.6"
   },
   "devDependencies": {
     "electron": "11.2.3"
