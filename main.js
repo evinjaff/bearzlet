@@ -224,9 +224,9 @@ function openVerifyWindow() {
   }
 
   newWindow = new BrowserWindow({
-    height: 300,
+    height: 400,
     resizable: true,
-    width: 400,
+    width: 500,
     title: 'Verify your email',
     minimizable: false,
     fullscreenable: false,
