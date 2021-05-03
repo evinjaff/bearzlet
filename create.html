@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <title>Create Set</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  </head>
+  <body> <!-- hello evin--> <!-- hewwo -->
+
+    <h2>Create a Set File</h2>
+
+    <h3>Set Name:</h3>
+
+    <input id="setname" value="MyBearzletSet">
+
+    <h4>Privacy:</h4>
+
+    <input type="radio" id="public" name="privacy" value="public" checked>
+    <label for="public">Public</label><br>
+    <input type="radio" id="private" name="privacy" value="private">
+    <label for="private">Private</label><br>
+
+    <h3>Contents (Rows with semicolons or empty boxes be ignored):</h3>
+    <button id="add">Add Row</button>
+    <br><br>
+    <div id="content">
+      <div id="row_1">
+      <input id="word1" class="word" placeholder="Word 1"> <input id="def1" class="def" placeholder="Definition 1">
+      <br><br>
+      <input id="word2" class="word" placeholder="Word 2">  <input id="def2" class="def" placeholder="Definition 2">
+      <br><br>
+      <input id="word3" class="word" placeholder="Word 3"> <input id="def3" class="def" placeholder="Definition 3">
+      <br><br>
+      </div>
+    </div>
+    <br><br>
+     <button id="submit">Submit</button>
+     <script>
+
+      let rowcount = 3;
+  
+      let submit = async function () {
+  
+        /*
+        set name
+        private (true/false)
+        word; definition
+        word; definition
+        */
+  
+        let w = document.getElementsByClassName("word");
+  
+        let d = document.getElementsByClassName("def");
+  
+        console.log(w, d);
+  
+        let c = document.getElementById("setname").value + `\n`;
+  
+        //Figure out if the set is private
+  
+        if(document.getElementById("public").checked == true){
+          c += "false" + `\r\n`;
+        }
+        else{
+          c += "true" + `\r\n`;
+        }
+  
+        
+  
+        for(let i=1;i<w.length+1;i++){
+          console.log(document.getElementById(`word${i}`).value , " & " , document.getElementById(`def${i}`).value);
+  
+          if(document.getElementById(`word${i}`).value == "" ||  document.getElementById(`def${i}`).value == ""){
+            console.log("empty");
+          }
+          else if(document.getElementById(`word${i}`).value.includes(";") ||  document.getElementById(`def${i}`).value.includes(";") || document.getElementById(`word${i}`).value.includes("\n") ||  document.getElementById(`def${i}`).value.includes("\n")){
+            console.log("special characters");
+          }
+          else{
+            c +=  document.getElementById(`word${i}`).value + "; " + document.getElementById(`def${i}`).value + `\n\r`;
+          }
+        }
+  
+   
+        TXTgenerate(c, document.getElementById("setname").value);
+  
+        
+  
+  
+      };
+  
+      //I am citing my own code
+      //https://raw.githubusercontent.com/evinjaff/FESOV-randomizer/master/config-min.js
+  
+      function TXTgenerate(contents, title) {
+  
+        if(title == "" || title == null || title == undefined){
+          title = "mySet";
+        }
+  
+        var e,
+          a =
+              ((e = document.createElement("a")),
+              document.body.appendChild(e),
+              (e.style = "display: none"),
+              function (a, t) {
+                  var n = a,
+                      r = new Blob([n], { type: "octet/stream" }),
+                      d = window.URL.createObjectURL(r);
+                  (e.href = d), (e.download = t), e.click(), window.URL.revokeObjectURL(d);
+              });
+              console.log(contents);
+      (fileName = `${title}.txt`), a(contents, fileName);
+      }
+  
+      let add = function () {
+  
+        rowcount++;
+  
+        let d = document.createElement("div");
+  
+        d.innerHTML = `<input id="word${rowcount}" class="word" placeholder="Word ${rowcount}"></input>  <input id="def${rowcount}" class="def" placeholder="Definition ${rowcount}"></input><br><br>`;
+  
+        document.getElementById("content").appendChild(d);
+  
+      }
+  
+      document.getElementById("submit").addEventListener("click", async function () { submit() }, false);
+  
+      document.getElementById("add").addEventListener("click", add, false);
+  
+  
+      </script>
+  </body>
+</html>

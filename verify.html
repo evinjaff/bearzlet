@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <title>Verify Email</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   </head>
-  <body> 
+  <body> <!-- hello evin--> <!-- hewwo -->
 
     <h2>To verify your email, please enter your username and email token</h2>
 
@@ -17,13 +18,42 @@
 
     <input id="email-token"></input>
 
-    <input id="submit">Submit</input>
+    <button id="submit">Submit</button>
   </body>
   <script>
 
     let submit = async function () {
 
+      const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/verifyemail.php';
+
+      a = JSON.parse(await $.ajax({
+        type: 'POST',
+        url: pathToPhpFile,
+        data: {
+          'token': document.getElementById('email-token').value,
+          'username': document.getElementById('username').value,
+        },
+        success: function (msg) {
+          console.log(msg);
+        },
+        failure: function (msg) {
+          //alert('failedreq')
+          obj = { 'status': 'requestfailed' };
+        }
+      }));
+
+      console.log(a);
+
+      if(a["status"] == true){
+        alert("Successfully verified email!");
+        window.close();
+      }
+      else{
+        alert("Could not verify email. Please try again.");
+      }
+
       
+
 
     };
 

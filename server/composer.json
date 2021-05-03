@@ -1,0 +1,18 @@
+{
+  "config": {
+  "github-oauth": {
+    "username": "evinjaff",
+    "password": "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"
+  }
+  },
+    "require": {
+        "mongodb/mongodb": "^1.8",
+    "phpmailer/phpmailer": "^6.4",
+    "mailgun/mailgun-php": "^3.2",
+    "guzzlehttp/guzzle": "^6.3",
+    "php-http/guzzle6-adapter": "^2.0",
+    "kriswallsmith/buzz": "^1.2",
+    "nyholm/psr7": "^1.4",
+    "php-http/message": "^1.11"
+    }
+}

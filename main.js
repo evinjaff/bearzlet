@@ -138,6 +138,16 @@ const template =
     ]
   },
   {
+    label: 'Create',
+    submenu: [
+      {
+        label: 'Create a Set',
+        click() { openCreateWindow() }
+
+      }
+    ]
+  },
+  {
     label: 'Verify Email',
     submenu: [
       {
@@ -217,7 +227,7 @@ function openVerifyWindow() {
     height: 300,
     resizable: true,
     width: 400,
-    title: '',
+    title: 'Verify your email',
     minimizable: false,
     fullscreenable: false,
 
@@ -226,6 +236,31 @@ function openVerifyWindow() {
   })
   console.log(__dirname);
   newWindow.loadURL(`file://${__dirname}/verify.html`);
+
+  newWindow.on('closed', function() {
+    newWindow = null
+  })
+}
+
+function openCreateWindow() {
+  if (newWindow) {
+    newWindow.focus()
+    return
+  }
+
+  newWindow = new BrowserWindow({
+    height: 800,
+    resizable: true,
+    width: 400,
+    title: 'Create Set',
+    minimizable: false,
+    fullscreenable: false,
+
+    webSecurity: false
+
+  })
+  console.log(__dirname);
+  newWindow.loadURL(`file://${__dirname}/create.html`);
 
   newWindow.on('closed', function() {
     newWindow = null
@@ -255,6 +290,16 @@ app.whenReady().then(() => {
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
+
+/*
+var ipcMain = require('electron').ipcMain;
+
+console.log(ipcMain);
+
+ipcMain.once('username', function (event,store) {
+    console.log(store);
+});
+*/
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

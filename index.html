@@ -9,21 +9,15 @@
      <script src="https://unpkg.com/vue-router@3.5.1/dist/vue-router.js"></script>
      <link rel="stylesheet" href="style.css">
      <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+     <script type="text/javascript" src="./node_modules/text-to-speech-js/lib/index.js"></script>
      <script type="text/javascript" src="./node_modules/fuzzyset.js/dist/fuzzyset.js"></script>
     <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
-
-        Haha no web security go brr
-
-    <meta http-equiv="Content-Security-Policy" content="default-src http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/*; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="connect-src http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/*; script-src 'self'">
     
-    
-    <meta http-equiv="Content-Security-Policy" content="connect-src http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/*">
-  -->
+    <!--
   <div id="counter">
     <span>Counter: {{ counter }}</span>
   </div>
+  -->
 
   <title>Bearzlet</title>
 </head>
@@ -31,13 +25,12 @@
   <div id="title">
     <span>{{title}}</span>
   </div>
-    
+    <!--
     We are using Node.js <span id="node-version"></span>,
     Chromium <span id="chrome-version"></span>,
     and Electron <span id="electron-version"></span>.
-
-    <br>
-
+    -->
+    <!--
     <div id="demo">
       <button @click="show = !show">
         Toggle
@@ -47,6 +40,7 @@
         <p v-if="show">hello</p>
       </transition>
     </div>
+    -->
 
     <div id="logout_div">
       <template v-if="show"> 
@@ -61,6 +55,7 @@
           Username:<input id="lusername" type="text">
           <br>
           Password:<input id="lpassword" type="password">
+          <br>
           <button id="login">Login</button>
           <br>
         </template>
@@ -75,22 +70,21 @@
       Password:<input id="cpassword" type="password">
       <br>
       Email:<input id="cemail" type="email">
+      <br>
       <button id="makeacct">Make Account</button>
       <br>
     </template>
     </div>
 
     
-
-    <br>
-
+    <!-- <br>
     <button id="queery">QUEERy</button>
-    <button id="loadsets">Load seets</button>
-
-    <h3>Starred Sets</h3>
+    <button id="loadsets">Load seets</button> -->
 
     <div id="sets">
+      <!-- <template v-if="show">
 
+      </template> -->
     </div>
 
     <div id="fileRead_div">
@@ -99,6 +93,7 @@
       <template v-if="show">    
         <h2 id="uploadset">Upload A New Set</h2>
         <input type="file" id="fileUpload" ref="myFile" @change="selectedFile(), $event"></input><br/>
+        <p id="upload_success" class="green" v-if="success">Uploaded!</p>
 
         <!-- <div v-if="lines.length">
           <p>Your file contains {{lines.length}} lines:</p>
@@ -114,28 +109,73 @@
 
     <div id="flashcards_div">
       <template v-if="show">
-        <button class="fnext" id="flashcardBack">&lt-</button>
-        <button @click="showSide = !showSide" v-if="showSide" class="card">{{side1}}</button>
-        <button @click="showSide = !showSide" v-else class="card">{{side2}}</button>
-        <button class="fnext" id="flashcardNext">-></button>
+        <br>
+        <br>
+        <table>
+          <thead>
+              
+          </thead>
+          <tbody>
+              <!--Fire Image original page: https://pixabay.com/illustrations/flame-fire-transparent-burn-hot-3561350/ -->
+              <!--Fire Image specific src: https://cdn.pixabay.com/photo/2018/07/25/12/59/flame-3561350_960_720.png-->
+              <tr>
+                  <td class="tblfirel">
+                    <button class="fnext" id="flashcardBack">←</button>
+                  </td>
+                  <td class="tblmsg">
+                    <button @click="showSide = !showSide" v-if="showSide" class="card">{{side1}}</button>
+                    <button @click="showSide = !showSide" v-else class="card">{{side2}}</button>
+                  </td>
+                  <td>
+                    <button class="fnext" id="flashcardNext">→</button>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+
+        
+        
+        
+
       </template>
     </div>
 
-
     <div id="write_div">
       <template v-if="show"> 
+        <br>
+        <br>
         <p>Definition: {{definition}}</p>
         Word:<input id="write_word" type="text">
         <button id="write_submit">check</button>
-        <button id="writeNext">-></button>
+        <button id="writeNext">→</button>
         <br>
         <p id="write_correct" class="green" v-if="correct">Correct!</p>
-        <p id="write_correct" class="green" v-if="correctfuzzy">Did you mean {{word}}? We'll give it to you!</p>
+        <p id="write_correctfuzzy" class="green" v-if="correctfuzzy">Did you mean {{word}}? We'll give it to you!</p>
         <p id="write_incorrect" class="red" v-if="incorrect">Incorrect!</p>
       </template>
     </div>
 
+    <div id="spell_div">
+      <template v-if="show"> 
+        <br>
+        <br>
+        <!-- <p> Audio here for {{definition}}</p> -->
+        <button id="spell_audio">Click to Hear Definition</button>
+        Word:<input id="spell_word" type="text">
+        <button id="spell_submit">check</button>
+        <button id="spellNext">→</button>
+        <br>
+        <p id="spell_correct" class="green" v-if="correct">Correct!</p>
+        <p id="spell_correctfuzzy" class="green" v-if="correctfuzzy">Did you mean {{word}}? We'll give it to you!</p>
+        <p id="spell_incorrect" class="red" v-if="incorrect">Incorrect!</p>
+      </template>
+    </div>
 
+    <div id="close_game_div">
+      <br>
+      <br>
+      <button v-if="show" id="close_game">Close Game</button>
+    </div>
 
     <p>This app was compiled on the command line by me, Evin!</p>
 
@@ -144,3 +184,13 @@
     <script src="./frontend.js"></script>
   </body>
 </html>
+
+
+<!-- 
+  set file template
+  set name
+  private (true/false)
+  word; definition
+  word; definition
+  ....
+-->

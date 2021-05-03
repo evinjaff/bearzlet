@@ -4,7 +4,7 @@
 
 //let FuzzySet = require(['node_modules/fuzzyset/dist/fuzzyset.js']);
 
-let user = "default settings";
+let user = "you are not logged in";
 let helloMsg = `Hello, ${user}`
 
 let sets = ["Set 1", "Set 2"];
@@ -18,9 +18,12 @@ let globalCorrect = false;
 let globalCorrectFuzzy = false;
 let globalIncorrect = false;
 
+let globalUploadSuccess = false;
+
 let loggedIn = false;
 let flashcardActive = false;
 let writeActive = false;
+let spellActive = false;
 
 let resp;
 
@@ -108,7 +111,39 @@ const Logout = {
     }, 100)
   }
 }
-Vue.createApp(Logout).mount('#logout_div')
+Vue.createApp(Logout).mount('#logout_div');
+
+const CloseGame = {
+  data() {
+    return {
+      show: false,
+    }
+  },
+  mounted() {
+    setInterval(() => {
+      if (flashcardActive || writeActive || spellActive) {
+        this.show = true;
+      } else {
+        this.show = false;
+      }    }, 100)
+  }
+}
+Vue.createApp(CloseGame).mount('#close_game_div');
+
+// const Sets = {
+//   data() {
+//     return {
+//       show: false,
+//     }
+//   },
+//   mounted() {
+//     setInterval(() => {
+//       this.show = loggedIn;
+//     }, 100)
+//   }
+// }
+
+// Vue.createApp(Sets).mount('#sets');
 
 // const FileRead = {
 //   data() {
@@ -128,7 +163,7 @@ let Flashcards = {
   }),
   methods:{
     changeCard(word,def) {
-      console.log("changeCard called w", word, def);
+      // console.log("changeCard called w", word, def);
       this.side1=word;
       this.side2=def;
     }
@@ -154,7 +189,7 @@ let Write = {
 }),
 methods:{
   changeCard(word,def) {
-    console.log("changeCard called w", word, def);
+    // console.log("changeCard called w", word, def);
     this.word=word;
     this.definition=def;
   }
@@ -171,7 +206,37 @@ mounted() {
 }
 
 }
-Vue.createApp(Write).mount('#write_div')
+Vue.createApp(Write).mount('#write_div');
+
+let Spell = {
+  data: () => ({
+    show: false,
+    word:"word",
+    definition:"definition",
+    correct:false,
+    correctfuzzy:false,
+    incorrect:false
+}),
+methods:{
+  changeCard(word,def) {
+    // console.log("changeCard called w", word, def);
+    this.word=word;
+    this.definition=def;
+  }
+},
+mounted() {
+  setInterval(() => {
+    this.word = currentWord;
+    this.definition = currentDef;
+    this.correct = globalCorrect;
+    this.correctfuzzy = globalCorrectFuzzy;
+    this.incorrect = globalIncorrect;
+    this.show = spellActive;
+  }, 100)
+}
+
+}
+Vue.createApp(Spell).mount('#spell_div')
 
 //Vue is data driven so dynamically add sets
 let getsets = async function () {
@@ -179,6 +244,12 @@ let getsets = async function () {
   // clear out any existing child elements
   document.getElementById("sets").innerHTML = "";
 
+
+  let e = document.createElement("h3");
+
+  e.innerHTML = "Your Sets:";
+
+  document.getElementById("sets").appendChild(e);
 
   //TODO get all sets with privacy set to "false" or set to true and your username
   let a;
@@ -188,6 +259,9 @@ let getsets = async function () {
     type: 'POST',
     // make sure you respect the same origin policy with this url:
     // http://en.wikipedia.org/wiki/Same_origin_policy
+    data: {
+      username: user,
+    },
     url: pathToPhpFile,
     success: function (msg) {
       console.log(msg);
@@ -208,6 +282,9 @@ let getsets = async function () {
     // make sure you respect the same origin policy with this url:
     // http://en.wikipedia.org/wiki/Same_origin_policy
     url: pathToPhpFile2,
+    data: {
+      username: user,
+    },
     success: function (msg) {
       console.log(msg);
     },
@@ -217,12 +294,8 @@ let getsets = async function () {
     }
   }));
 
-  
-
-
-  console.log(a);
-  console.log(b);
-
+  // console.log(a);
+  // console.log(b);
   
   //adds name of set and buttons
 
@@ -232,19 +305,28 @@ let getsets = async function () {
   a["user"].forEach((s, index) => {
     let d = document.createElement("p");
 
+    let mostmissed = [];
+    s["cards"].forEach((card) => {
+      // console.log("card obj", card);
+      // console.log("comparing", card[2], " & ", card[3])
+      if (card[2]<card[3]){
+        mostmissed.push(card[0]+" ("+(card[2]-card[3])+")");
+      }
+    });
+   // console.log("most missed cards", mostmissed);
 
     //Check for Starred Sets
     let favflag = false;
     b["starredsets"].forEach(g => {
-      console.log( s["name"] + " === " + g);
+    // console.log( s["name"] + " === " + g);
       if( s["name"] === g ){
-        d.innerHTML += "<strong>" + s["name"] + "</strong>";
+        d.innerHTML += "<strong>" + s["name"] + "</strong> ";
         favflag = true;
       }
     })
 
     if(!favflag){
-      d.innerHTML += s["name"];
+      d.innerHTML += s["name"]+" ";
     }
     let starButton;
     if (!favflag){
@@ -261,20 +343,36 @@ let getsets = async function () {
     writeButton.innerHTML += "Writing";
     d.appendChild(writeButton);
 
+    let spellButton = document.createElement('button');
+    spellButton.innerHTML += "Spell";
+    d.appendChild(spellButton);
+
+    if (mostmissed.length>0){
+      let string = " Often Missed: | ";
+      mostmissed.forEach(m =>{
+        string+= m+" | ";
+      });
+      // string+= "("+mostmissed.length+")";
+      let missed = document.createTextNode(string);
+      
+      d.appendChild(missed);
+    }
+
     document.getElementById("sets").appendChild(d);
 
     if (!favflag){
       starButton.addEventListener("click", function () { starSet(s) }, false);
     }
     flashcardButton.addEventListener("click", function () { runFlashcard(s) }, false);
-    writeButton.addEventListener("click", function () { runWriting(s["name"]) }, false);
+    writeButton.addEventListener("click", function () { runWriting(s) }, false);
+    spellButton.addEventListener("click", function () { runSpell(s) }, false);
   });
 
-  let e = document.createElement("h3");
+  let e2 = document.createElement("h3");
 
-  e.innerHTML = "Public Sets:";
+  e2.innerHTML = "Popular Sets:";
 
-  document.getElementById("sets").appendChild(e);
+  document.getElementById("sets").appendChild(e2);
 
   //Add public sets
 
@@ -283,8 +381,26 @@ let getsets = async function () {
     //Save for starred sets
     //d.innerHTML += "<strong>" + s["name"] + "</strong>";
 
-    d.innerHTML += s["name"];
-    //TODO Starred sets
+
+    //Check for Starred Sets
+    let favflag = false;
+    b["starredsets"].forEach(g => {
+      console.log( s["name"] + " === " + g);
+      if( s["name"] === g ){
+        d.innerHTML += "<strong>" + s["name"] + "</strong> ";
+        favflag = true;
+      }
+    })
+    if (!favflag){
+      d.innerHTML += s["name"]+" ";
+    }
+
+    let starButton;
+    if (!favflag){
+      starButton = document.createElement('button');
+      starButton.innerHTML += "Star Me!";
+      d.appendChild(starButton);
+    }
 
     let flashcardButton = document.createElement('button');
     flashcardButton.innerHTML += "Flashcards";
@@ -294,10 +410,18 @@ let getsets = async function () {
     writeButton.innerHTML += "Writing";
     d.appendChild(writeButton);
 
+    let spellButton = document.createElement('button');
+    spellButton.innerHTML += "Spell";
+    d.appendChild(spellButton);
+
     document.getElementById("sets").appendChild(d);
 
+    if (!favflag){
+      starButton.addEventListener("click", function () { starSet(s) }, false);
+    }
     flashcardButton.addEventListener("click", function () { runFlashcard(s) }, false);
-    writeButton.addEventListener("click", function () { runWriting(s["name"]) }, false);
+    writeButton.addEventListener("click", function () { runWriting(s) }, false);
+    spellButton.addEventListener("click", function () { runSpell(s) }, false);
   });
   
 
@@ -325,9 +449,10 @@ let runFlashcard = async function (setObject) {
 
   currentIndex = -1;
   flashcardNext();
-
-  writeActive = false;
+  
   flashcardActive = true;
+  writeActive = false;
+  spellActive = false;
   //don't look at this i know it's bad 
   //It's ok Lane I still love you - Evin
   //https://stackoverflow.com/questions/16623852/how-to-pause-javascript-code-execution-for-2-seconds
@@ -335,34 +460,161 @@ let runFlashcard = async function (setObject) {
   try {
     document.getElementById("flashcardNext").removeEventListener("click", flashcardNext, false);
     document.getElementById("flashcardBack").removeEventListener("click", flashcardBack, false);
+    document.getElementById("close_game").removeEventListener("click", closeGame , false);
   } catch (e){}
 
   setTimeout(function(){
     document.getElementById("flashcardNext").addEventListener("click", flashcardNext, false);
     document.getElementById("flashcardBack").addEventListener("click", flashcardBack, false);
+    document.getElementById("close_game").addEventListener("click", closeGame , false);
+
   }, 100);
 }
 
-let runWriting = async function (setName) {
-  console.log("running writing with", setName);
+let runWriting = async function (setObject) {
+  console.log("running flashcard with", setObject);
 
-  //TODO set setName as currentWords and currentDefs
-  currentSetName = setName;
+  console.log("setobj", setObject);
+
+  currentSetName = setObject["name"];
+
+  sets = [];
+   currentWords = [];
+   currentDefs = [];
+
+  setObject["cards"].forEach(s => {
+
+    currentWords[currentWords.length] = s[0];
+    currentDefs[currentDefs.length] = s[1];
+  })
+
 
   currentIndex = -1;
   writeNext();
 
   flashcardActive = false;
   writeActive = true;
+  spellActive = false;
 
-  document.getElementById("writeNext").removeEventListener("click", async function () { writeNext() }, false);
-  document.getElementById("write_submit").removeEventListener("click", async function () { checkWrite() }, false);    
+  try {
+    document.getElementById("writeNext").removeEventListener("click", writeNext, false);
+    document.getElementById("write_submit").removeEventListener("click", checkWrite , false); 
+    document.getElementById("close_game").removeEventListener("click", closeGame , false);   
+  } catch (e) {}
 
   setTimeout(function(){
-      document.getElementById("writeNext").addEventListener("click", async function () { writeNext() }, false);
-      document.getElementById("write_submit").addEventListener("click", async function () { checkWrite() }, false);    
+      document.getElementById("writeNext").addEventListener("click",  writeNext , false);
+      document.getElementById("write_submit").addEventListener("click", checkWrite , false); 
+      document.getElementById("close_game").addEventListener("click", closeGame , false);   
     }, 100);
+}
+
+let runSpell = function (setObject) {
+  console.log("running spell with", setObject);
+
+  console.log("setobj", setObject);
+
+  currentSetName = setObject["name"];
+
+  sets = [];
+   currentWords = [];
+   currentDefs = [];
+
+  setObject["cards"].forEach(s => {
+
+    currentWords[currentWords.length] = s[0];
+    currentDefs[currentDefs.length] = s[1];
+  })
+
+  currentIndex = -1;
+  spellNext();
+
+  writeActive = false;
+  flashcardActive = false;
+  spellActive = true;
+  //don't look at this i know it's bad 
+  //It's ok Lane I still love you - Evin
+  //https://stackoverflow.com/questions/16623852/how-to-pause-javascript-code-execution-for-2-seconds
+  
+  try {
+    document.getElementById("spellNext").removeEventListener("click", spellNext, false);
+    document.getElementById("spell_submit").removeEventListener("click", checkSpell , false);  
+    document.getElementById("spell_audio").removeEventListener("click", spellAudio , false);  
+    document.getElementById("close_game").removeEventListener("click", closeGame , false);    
+  } catch (e){}
+
+  setTimeout(function(){
+    document.getElementById("spellNext").addEventListener("click", spellNext, false);
+    document.getElementById("spell_submit").addEventListener("click", checkSpell , false); 
+    document.getElementById("spell_audio").addEventListener("click", spellAudio , false);
+    document.getElementById("close_game").addEventListener("click", closeGame , false);         
+  }, 100);
+}
+
+let spellAudio = function () {
+
+  var msg = new SpeechSynthesisUtterance();
+  var voices = window.speechSynthesis.getVoices();
+  msg.voice = voices[10]; 
+  msg.volume = 1; // From 0 to 1
+  msg.rate = 1; // From 0.1 to 10
+  msg.pitch = 2; // From 0 to 2
+  msg.text = currentDef;
+  msg.lang = 'en';
+  speechSynthesis.speak(msg);
+
+  console.log("playing audio of", currentDef);
+}
+
+let spellNext = function () {
+  console.log("next");
+  currentIndex++;
+  if (currentIndex==currentWords.length){
+    currentIndex=0;
   }
+  currentWord = currentWords[currentIndex];
+  currentDef = currentDefs[currentIndex];
+
+  if (document.getElementById('spell_word')!= null){
+    document.getElementById('spell_word').value = '';
+  }
+  globalCorrect = false;
+  globalIncorrect = false;
+  globalCorrectFuzzy = false;
+
+  Spell.methods.changeCard(currentWords[currentIndex], currentDefs[currentIndex]);
+}
+
+let checkSpell = function () {
+  let attempt = document.getElementById("spell_word").value;
+  console.log(attempt);
+
+  let fuzzy = new FuzzySet(currentWords);
+  let fuzzyresp = fuzzy.get(attempt);
+  let fuzzyattempt = '';
+  if (fuzzyresp!=null){
+    if (fuzzyresp.length>0){
+      if (fuzzyresp[0][0] > .7){
+        fuzzyattempt = fuzzyresp[0][1];
+      }
+    }
+  }
+
+  console.log("attempt:", attempt);
+  console.log("fuzzy attempt:", fuzzyattempt);
+  console.log("true answer: ", currentWord);
+
+  if (attempt === currentWord){
+    globalCorrect = true;
+    updateWrite(true, currentIndex);
+  } else if (fuzzyattempt === currentWord) {
+    globalCorrectFuzzy = true;
+    updateWrite(true, currentIndex);
+  } else {
+    globalIncorrect = true;
+    updateWrite(false, currentIndex);
+  }
+}
 
 let flashcardNext = function () {
   console.log("next");
@@ -388,19 +640,20 @@ let flashcardBack = function (){
   Flashcards.methods.changeCard(currentWords[currentIndex], currentDefs[currentIndex]);
 }
 
-let checkWrite = async function() {
+let checkWrite =  function() {
   let attempt = document.getElementById("write_word").value;
   console.log(attempt);
 
   let fuzzy = new FuzzySet(currentWords);
   let fuzzyresp = fuzzy.get(attempt);
   let fuzzyattempt = '';
-  if (fuzzyresp.length>0){
-    if (fuzzyresp[0][0] > .7){
-      fuzzyattempt = fuzzyresp[0][1];
+  if (fuzzyresp!=null){
+    if (fuzzyresp.length>0){
+      if (fuzzyresp[0][0] > .7){
+        fuzzyattempt = fuzzyresp[0][1];
+      }
     }
   }
-
   console.log("attempt:", attempt);
   console.log("fuzzy attempt:", fuzzyattempt);
   console.log("true answer: ", currentWord);
@@ -417,7 +670,7 @@ let checkWrite = async function() {
   }
 }
 
-let writeNext = async function(){
+let writeNext =  function(){
   console.log("next");
   currentIndex++;
   if (currentIndex==currentWords.length){
@@ -471,7 +724,7 @@ let makeacct = async function () {
     },
     success: function (msg) {
       console.log(msg);
-
+      alert("Check your email for the verify code!");
     },
     failure: function (msg) {
       //alert('failedreq')
@@ -479,13 +732,13 @@ let makeacct = async function () {
     }
   });
 
-  let verify = document.createElement("p");
+  // let verify = document.createElement("p");
 
-  //verify Email here
+  // //verify Email here
 
 
 
-  document.getElementById("makeacct_div").appendChild(d);
+  // document.getElementById("makeacct_div").appendChild(d);
 
 }
 
@@ -495,7 +748,8 @@ const fileRead = {
     return {
       show: true,
       text:'',
-      lines: []
+      lines: [],
+      success: false
     }
   },
   methods:{
@@ -522,12 +776,19 @@ const fileRead = {
   },
   mounted() {
     setInterval(() => {
-      this.show = loggedIn;
+      if (flashcardActive || writeActive || spellActive || !loggedIn) {
+        this.show = false;
+      } else {
+        this.show = true;
+      }
+      this.success = globalUploadSuccess;
     }, 100)
   }
   
 }
 Vue.createApp(fileRead).mount('#fileRead_div')
+
+
 
 
 let uploadSet = async function (c) {
@@ -537,8 +798,14 @@ let uploadSet = async function (c) {
   let privacy = c[1];
   let contents = c.slice(2);
 
+  if (!contents[contents.length-1] || contents[contents.length-1] == "\r"){
+    contents.pop();
+  }
+
+  console.log(contents);
+  
   const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/uploadset.php'
-    $.ajax({
+    let resp = $.ajax({
       type: "POST",
       data: {
         name: name,
@@ -549,10 +816,13 @@ let uploadSet = async function (c) {
       url: pathToPhpFile,
       success: function(msg){
         console.log("successfully sent to php",msg);
+        if (msg.includes("Inserted 1")){
+          globalUploadSuccess = true;
+        }
       },
     });
 
-
+   getsets();
 }
 
 let starSet = async function(set) {
@@ -573,7 +843,7 @@ let starSet = async function(set) {
     }
   });
 
-
+  getsets();
 }
 
 
@@ -635,18 +905,32 @@ let query = async function () {
 }
 
 let logout = async function(){
-  user = "";
+  closeGame();
+  globalUploadSuccess = false;
+  user = "you are not logged in";
   loggedIn = false;
   console.log("logged in?", loggedIn);
 
+  try{
   setTimeout(function(){
+    if(document.getElementById("logout") != null){
     document.getElementById("logout").addEventListener("click", async function () { await logout() }, false);
-  }, 100);
+    }
+  }, 300);
+  }
+  catch(e){
+    console.log(e);
+  }
 
-  
+  document.getElementById("sets").innerHTML = "";
+  setTimeout(function(){
+    document.getElementById("login").addEventListener("click", async function () { await login() }, false);
+    document.getElementById("makeacct").addEventListener("click", async function () { await makeacct(); }, false);
+  }, 300);
+
 }
 
-
+//add token test
 let login = async function(){
   let a;
   const pathToPhpFile = 'http://ec2-54-157-162-187.compute-1.amazonaws.com/quizlet/login.php'
@@ -661,15 +945,29 @@ let login = async function(){
       'password': document.getElementById('lpassword').value,
     },
     success: function (msg) {
-      //console.log(msg);
-      user = document.getElementById('lusername').value;
-      helloMsg = `Hello, ${user}`;
-      loggedIn = true;
-      console.log("logged in?", loggedIn);
-      
-      setTimeout(function(){
-        document.getElementById("logout").addEventListener("click", async function () { await logout() }, false);
-      }, 100);
+      console.log(msg);
+
+      let res = JSON.parse(msg);
+
+      if(res["status"] == true){
+        user = document.getElementById('lusername').value;
+        helloMsg = `Hello, ${user}`;
+        loggedIn = true;
+        console.log("logged in?", loggedIn);
+
+        setTimeout(function(){
+          document.getElementById("logout").addEventListener("click", async function () { await logout() }, false);
+        }, 200);
+
+        setTimeout(function(){
+          getsets();  
+        }, 200);
+
+      }
+      else{
+        alert("Failed to log in\n (Hint: Make sure your email is verified)");
+      }
+
     },
     failure: function (msg) {
       //alert('failedreq')
@@ -679,11 +977,21 @@ let login = async function(){
 
 }
 
-document.getElementById("loadsets").addEventListener("click", async function () { await getsets(); }, false);
+let closeGame = function () {
+  console.log("closing");
+  flashcardActive = false;
+  writeActive = false;
+  spellActive = false;
+
+  getsets();
+
+}
+
+//document.getElementById("loadsets").addEventListener("click", async function () {  }, false);
 
 document.getElementById("makeacct").addEventListener("click", async function () { await makeacct(); }, false);
 
-document.getElementById("queery").addEventListener("click", async function () { resp = await query(); document.getElementById("ajaxtest").innerHTML = resp; }, false);
+//document.getElementById("queery").addEventListener("click", async function () { resp = await query(); document.getElementById("ajaxtest").innerHTML = resp; }, false);
 
 document.getElementById("uploadset").addEventListener("click", async function () { await uploadSet() }, false);
 

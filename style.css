@@ -1,30 +1,74 @@
-  body {
-    margin: 30px;
-  }
-  
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity 0.5s ease;
-  }
-  
-  .fade-enter-from, .fade-leave-to {
-    opacity: 0;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+body {
+  margin: 30px;
+  font-family: 'Open Sans', sans-serif;
+  color: #2c0735;
+  background-color: #e7c6ff;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+input{
+  background-color: #bbd0ff;
+  padding: 6px;
+  text-align: center;
+  border-width: 0.1px;
+  border-color: #d1def9;
+  font-size: 14px;
+}
+strong{
+  text-decoration: underline;
+}
+
+button{
+  background-color: #bbd0ff;
+  padding: 6px;
+  text-align: center;
+  border-width: 0.1px;
+  border-color: #d1def9;
+  font-size: 14px;
+}
+
+button:hover {
+background-color: #799df1; /* Green */
+}
 
 .card{
-  border-style: solid;
-  border-width: medium;
-  border-radius: 3px;
-  padding: 32px 16px;
+border-style: solid;
+border-width: medium;
+border-color: #caacfd;;
+border-radius: 1px;
+padding: 32px 46px;
+width: 500px;
+height: 120px;
+background-color: #b997f4;
 }
 
 .fnext{
-  padding: 8px 8px;
+padding: 10px 10px;
+background-color: #b997f4;
+border-style: solid;
+border-width: medium;
+border-color: #caacfd;;
+border-radius: 59px;
 }
 
 .green{
-  color: darkgreen;
+color: darkgreen;
 }
 
 .red{
-  color:darkred;
+color:darkred;
+}
+
+td{
+  text-align: center;
+  width: 300px
 }
