@@ -151,7 +151,7 @@ if($uname == null && $uemail == null){
 	'from' => 'Bearzlet Support <mailgun@sandbox623e8d35b88447bc8e67ca2240853895.mailgun.org>',
 	'to' => 'Bearzlet User <'.$email.'>',
 	'subject' => 'Please verify your email',
-	'text' => 'Hi, '. $user . '. Your email token is: ' . $verifytoken . '. Please go to verify email under "accounts"->"verify email" to verify it'
+	'text' => 'Hi, '. $user . '. Your email token is: ' . $verifytoken . '. Please go to "verify email" in the application to verify it'
 	]);
 
   $insertOneResult = $collection->insertOne([
